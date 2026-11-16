@@ -36,7 +36,7 @@ Les relations entre les tables permettent de définir les liens entre les diffé
 - Une session annulée ne génère pas de paiement.
 - Un paiement est associé à une seule session.
 
-**Cardinalité :** Session (0-1,1) — Paiement 
+**Cardinalité :** Session (1,1) — Paiement 
 
 ### Incident et Intervention
 
