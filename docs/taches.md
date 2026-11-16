@@ -2,8 +2,7 @@
 
 ## Ezechiel
 
-- Conception MCD MLD
-- Ajout un dictionnaire de données
+- Analyser & Modéliser
 - Documentation
 - Gestion des sauvegardes
 
