@@ -16,7 +16,7 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_borne | INTEGER | PRIMARY KEY | Identifiant de la borne. |
-| id_station | INTEGER | FOREIGN KEY, NOT NULL | Identifiant de la station associée. |
+| id_station | INTEGER | FOREIGN KEY(ref: < id.stations), NOT NULL | Identifiant de la station associée. |
 | code_borne | VARCHAR(20) | UNIQUE, NOT NULL | Code unique de la borne (ex : BR-LIL-01). |
 | puissance_kw | INTEGER | NOT NULL, CHECK (> 0) | Puissance de la borne en kW. |
 | connecteur | VARCHAR(30) | NOT NULL | Type de prise (ex : Type2, CCS). |
@@ -38,7 +38,7 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_vehicule | INTEGER | PRIMARY KEY | Identifiant du véhicule. |
-| id_client | INTEGER | FOREIGN KEY, NOT NULL | Identifiant du propriétaire. |
+| id_client | INTEGER | FOREIGN KEY(ref:>id.client), NOT NULL | Identifiant du propriétaire. |
 | immatriculation | VARCHAR(20) | UNIQUE, NOT NULL | Plaque d'immatriculation du véhicule (ex : ESSAI-0001). |
 | marque | VARCHAR(50) | NOT NULL | Marque du véhicule (ex : Renault, Peugeot). |
 | modele | VARCHAR(50) | NOT NULL | Modèle du véhicule (ex : Zoe, e-208). |
@@ -49,8 +49,8 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_session | INTEGER | PRIMARY KEY | Identifiant de la session. |
-| id_borne | INTEGER | FOREIGN KEY, NOT NULL | Identifiant de la borne utilisée. |
-| id_vehicule | INTEGER | FOREIGN KEY, NOT NULL | Identifiant du véhicule rechargé. |
+| id_borne | INTEGER | FOREIGN KEY(ref:>id.borne), NOT NULL | Identifiant de la borne utilisée. |
+| id_vehicule | INTEGER | FOREIGN KEY(ref:>id.vehicule), NOT NULL | Identifiant du véhicule rechargé. |
 | debut_session | TIMESTAMP | NOT NULL | Date et heure du début de la recharge. |
 | fin_session | TIMESTAMP | NULL | Date et heure de fin de la recharge. |
 | energie_kwh | DECIMAL(8,2) | NULL | Quantité d'énergie délivrée en kWh. |
@@ -62,7 +62,7 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_paiement | INTEGER | PRIMARY KEY | Identifiant du paiement. |
-| id_session | INTEGER | FOREIGN KEY, NOT NULL | Identifiant de la session concernée. |
+| id_session | INTEGER | FOREIGN KEY(ref:-id.session), NOT NULL | Identifiant de la session concernée. |
 | date_paiement | TIMESTAMP | NOT NULL | Date et heure du paiement. |
 | montant_eur | DECIMAL(8,2) | NOT NULL, CHECK (>= 0) | Montant du paiement en euros. |
 | mode_paiement | VARCHAR(30) | NOT NULL | Moyen de paiement utilisé (abonnement, carte, etc.). |
@@ -73,7 +73,7 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_incident | INTEGER | PRIMARY KEY | Identifiant de l'incident. |
-| id_borne | INTEGER | FOREIGN KEY, NOT NULL | Identifiant de la borne concernée. |
+| id_borne | INTEGER | FOREIGN KEY(ref:>id.incidents), NOT NULL | Identifiant de la borne concernée. |
 | date_signalement | TIMESTAMP | NOT NULL | Date et heure du signalement. |
 | date_resolution | TIMESTAMP | NULL | Date et heure de résolution de l'incident. |
 | categorie | VARCHAR(50) | NOT NULL | Type de panne (defaut_reseau, erreur_paiement, etc.). |
@@ -95,8 +95,8 @@
 | Colonne | Type SQL | Contraintes | Description |
 |---|---|---|---|
 | id_intervention | INTEGER | PRIMARY KEY | Identifiant de l'intervention. |
-| id_incident | INTEGER | FOREIGN KEY, NOT NULL | Identifiant de l'incident concerné. |
-| id_technicien | INTEGER | FOREIGN KEY, NOT NULL | Identifiant du technicien responsable. |
+| id_incident | INTEGER | FOREIGN KEY(ref:>id.incident), NOT NULL | Identifiant de l'incident concerné. |
+| id_technicien | INTEGER | FOREIGN KEY(ref:>id.technicien), NOT NULL | Identifiant du technicien responsable. |
 | date_debut | TIMESTAMP | NOT NULL | Date et heure du début de l'intervention. |
 | date_fin | TIMESTAMP | NULL | Date et heure de fin de l'intervention. |
 | statut | VARCHAR(20) | NOT NULL | État de l'intervention (terminee, en_cours, etc.). |
