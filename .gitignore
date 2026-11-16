@@ -1,4 +1,6 @@
-*/.env*
-*/!.env.example
+*/.env.*
+*/.env
+!*/.env.example
+.venv/
+__pycache__/
 ad.ps1
-*__pycache__/
