@@ -8,49 +8,49 @@ Les relations entre les tables permettent de définir les liens entre les diffé
 - Une station peut posséder plusieurs bornes.
 - Une borne est rattachée à une seule station.
 
-**Cardinalité :** Station (1,N) — Borne (1,1)
+**Cardinalité :** Station (1,N) — Borne 
 
 ### Client et Véhicule
 
 - Un client peut enregistrer plusieurs véhicules.
 - Un véhicule appartient à un seul client.
 
-**Cardinalité :** Client (1,N) — Véhicule (1,1)
+**Cardinalité :** Client (1,N) — Véhicule
 
 ### Borne et Session de recharge
 
 - Une borne peut être utilisée dans plusieurs sessions.
 - Une session utilise une seule borne.
 
-**Cardinalité :** Borne (0,N) — Session (1,1)
+**Cardinalité :** Borne (0-1,N) — Session 
 
 ### Véhicule et Session de recharge
 
 - Un véhicule peut participer à plusieurs sessions de recharge.
 - Une session concerne un seul véhicule.
 
-**Cardinalité :** Véhicule (0,N) — Session (1,1)
+**Cardinalité :** Véhicule (0-1,N) — Session 
 
 ### Session et Paiement
 
 - Une session annulée ne génère pas de paiement.
 - Un paiement est associé à une seule session.
 
-**Cardinalité :** Session (0,1) — Paiement (1,1)
+**Cardinalité :** Session (0-1,1) — Paiement 
 
 ### Incident et Intervention
 
 - Un incident peut nécessiter plusieurs interventions.
 - Chaque intervention concerne un seul incident.
 
-**Cardinalité :** Incident (0,N) — Intervention (1,1)
+**Cardinalité :** Incident (0,N) — Intervention 
 
 ### Technicien et Intervention
 
 - Un technicien peut réaliser plusieurs interventions.
 - Chaque intervention est réalisée par un seul technicien.
 
-**Cardinalité :** Technicien (0,N) — Intervention (1,1)
+**Cardinalité :** Technicien (0-1,N) — Intervention 
 
 ## 3.2. Normalisation de la base de données
 
