@@ -23,17 +23,21 @@ def get_stations():
             with conn.cursor() as cursor:
 
                 cursor.execute("""
-                    SELECT id, nom, adresse
+                    SELECT *
                     FROM stations
                 """)
 
                 stations = cursor.fetchall()
+                print(stations)
 
                 return [
                     {
                         "id": station[0],
-                        "nom": station[1],
-                        "adresse": station[2]
+                        "code": station[1],
+                        "nom Station": station[2],
+                        "ville": station[3],
+                        "adresse": station[4],
+                        "date ouverture": station[5]
                     }
                     for station in stations
                 ]
@@ -55,7 +59,7 @@ def get_bornes(id: int):
 
                 # Vérifier que la station existe
                 cursor.execute(
-                    "SELECT id FROM stations WHERE id = %s",
+                    "SELECT id_station FROM stations WHERE id_station = %s",
                     (id,)
                 )
 
@@ -69,19 +73,23 @@ def get_bornes(id: int):
 
                 # Récupérer les bornes de la station
                 cursor.execute("""
-                    SELECT id, nom, puissance, disponible
-                    FROM bornes
-                    WHERE station_id = %s
+                    SELECT b.id_borne, b.id_station,s.code_station,b.code_borne,b.puissance_kw, b.connecteur,b.etat
+                    FROM bornes b 
+                    INNER JOIN stations s ON b.id_station = s.id_station
+                    WHERE b.id_station = %s
                 """, (id,))
 
                 bornes = cursor.fetchall()
 
                 return [
                     {
-                        "id": borne[0],
-                        "nom": borne[1],
-                        "puissance": borne[2],
-                        "disponible": borne[3]
+                        "id_borne": borne[0],
+                        "id_station":borne[1],
+                        "code_station":borne[2],
+                        "code_borne":borne[3],
+                        "puissance_borne":borne[4],
+                        "connecteur":borne[5],
+                        "etat_borne":borne[6]
                     }
                     for borne in bornes
                 ]
