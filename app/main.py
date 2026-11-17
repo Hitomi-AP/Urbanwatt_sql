@@ -28,7 +28,6 @@ def get_stations():
                 """)
 
                 stations = cursor.fetchall()
-                print(stations)
 
                 return [
                     {
