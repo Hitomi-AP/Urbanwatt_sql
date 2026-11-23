@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 from app.database import get_connection
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 app = FastAPI(
@@ -8,7 +11,12 @@ app = FastAPI(
     description="API de gestion des stations et des bornes",
     version="1.0.0"
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 @app.get("/health")
 def health_check():
     return{"Health":"OK"}
@@ -23,7 +31,7 @@ def get_stations():
             with conn.cursor() as cursor:
 
                 cursor.execute("""
-                    SELECT id, nom, adresse
+                    SELECT *
                     FROM stations
                 """)
 
@@ -32,8 +40,11 @@ def get_stations():
                 return [
                     {
                         "id": station[0],
-                        "nom": station[1],
-                        "adresse": station[2]
+                        "code": station[1],
+                        "nom Station": station[2],
+                        "ville": station[3],
+                        "adresse": station[4],
+                        "date ouverture": station[5]
                     }
                     for station in stations
                 ]
@@ -55,7 +66,7 @@ def get_bornes(id: int):
 
                 # Vérifier que la station existe
                 cursor.execute(
-                    "SELECT id FROM stations WHERE id = %s",
+                    "SELECT id_station FROM stations WHERE id_station = %s",
                     (id,)
                 )
 
@@ -69,19 +80,23 @@ def get_bornes(id: int):
 
                 # Récupérer les bornes de la station
                 cursor.execute("""
-                    SELECT id, nom, puissance, disponible
-                    FROM bornes
-                    WHERE station_id = %s
+                    SELECT b.id_borne, b.id_station,s.code_station,b.code_borne,b.puissance_kw, b.connecteur,b.etat
+                    FROM bornes b 
+                    INNER JOIN stations s ON b.id_station = s.id_station
+                    WHERE b.id_station = %s
                 """, (id,))
 
                 bornes = cursor.fetchall()
 
                 return [
                     {
-                        "id": borne[0],
-                        "nom": borne[1],
-                        "puissance": borne[2],
-                        "disponible": borne[3]
+                        "id_borne": borne[0],
+                        "id_station":borne[1],
+                        "code_station":borne[2],
+                        "code_borne":borne[3],
+                        "puissance_borne":borne[4],
+                        "connecteur":borne[5],
+                        "etat_borne":borne[6]
                     }
                     for borne in bornes
                 ]
@@ -94,3 +109,8 @@ def get_bornes(id: int):
             status_code=500,
             detail=str(e)
         )
+    app.mount(
+    "/",
+    StaticFiles(directory=Path(__file__).with_name("static"), html=True),
+    name="frontend",
+)
