@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URBANWATT – Portail réseau</title>
+  <style>
+    :root {
+      --bg: #0b1226;
+      --panel: #131c33;
+      --panel2: #1a2540;
+      --line: #273556;
+      --text: #e6ecf8;
+      --muted: #8fa0c2;
+      --accent: #38bdf8;
+      --ok: #34d399;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --info: #a78bfa;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 20px 48px
+    }
+
+    /* En-tête */
+    header.top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .brand .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    .brand h1 {
+      margin: 2px 0 0;
+      font-size: 26px;
+      line-height: 1.2
+    }
+
+    .health {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--muted)
+    }
+
+    .dot.up {
+      background: var(--ok);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, .18)
+    }
+
+    .dot.down {
+      background: var(--bad);
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, .18)
+    }
+
+    /* Tuiles de stats */
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .tile {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px
+    }
+
+    .tile .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .tile .value {
+      font-size: 26px;
+      font-weight: 700;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .tile .value.small {
+      font-size: 20px;
+      padding-top: 5px
+    }
+
+    /* Disposition */
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) 1fr;
+      gap: 20px;
+      align-items: start
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .panel>h2 {
+      margin: 0;
+      padding: 14px 16px;
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px
+    }
+
+    .panel>h2 .count {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 13px
+    }
+
+    .panel .body {
+      padding: 14px 16px
+    }
+
+    /* Champs */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+      color: inherit
+    }
+
+    input[type=search],
+    input[type=number],
+    select {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-width: 0;
+    }
+
+    input[type=search] {
+      flex: 1 1 160px
+    }
+
+    select {
+      flex: 0 1 auto;
+      max-width: 100%
+    }
+
+    input:focus-visible,
+    select:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px
+    }
+
+    .btn {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer
+    }
+
+    .btn:hover {
+      border-color: var(--accent)
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #04223a;
+      font-weight: 600
+    }
+
+    /* Liste de stations */
+    ul.stations {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 62vh;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    button.station {
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      gap: 2px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    button.station:hover {
+      border-color: var(--accent)
+    }
+
+    button.station[aria-pressed=true] {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, .10)
+    }
+
+    .station .code {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: .03em
+    }
+
+    .station .name {
+      font-weight: 600
+    }
+
+    .station .meta {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    /* Détail station / bornes */
+    .station-head {
+      margin-bottom: 14px
+    }
+
+    .station-head .t {
+      font-size: 18px;
+      font-weight: 700
+    }
+
+    .station-head .s {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px
+    }
+
+    .chip {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .chip b {
+      color: var(--text);
+      font-variant-numeric: tabular-nums
+    }
+
+    .goto {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .goto input {
+      width: 90px;
+      padding: 5px 8px
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 480px
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap
+    }
+
+    th {
+      background: var(--panel2);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums
+    }
+
+    td.code {
+      font-weight: 600
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid
+    }
+
+    .badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor
+    }
+
+    .badge.ok {
+      color: var(--ok);
+      background: rgba(52, 211, 153, .10);
+      border-color: rgba(52, 211, 153, .35)
+    }
+
+    .badge.warn {
+      color: var(--warn);
+      background: rgba(251, 191, 36, .10);
+      border-color: rgba(251, 191, 36, .35)
+    }
+
+    .badge.bad {
+      color: var(--bad);
+      background: rgba(248, 113, 113, .10);
+      border-color: rgba(248, 113, 113, .35)
+    }
+
+    .badge.info {
+      color: var(--info);
+      background: rgba(167, 139, 250, .10);
+      border-color: rgba(167, 139, 250, .35)
+    }
+
+    .badge.neutral {
+      color: var(--muted);
+      background: var(--panel2);
+      border-color: var(--line)
+    }
+
+    /* États : chargement, vide, erreur */
+    .state {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted)
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid var(--line);
+      border-top-color: var(--accent);
+      display: inline-block;
+      animation: spin .8s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .error {
+      border: 1px solid rgba(248, 113, 113, .45);
+      background: rgba(248, 113, 113, .08);
+      border-radius: 12px;
+      padding: 14px 16px
+    }
+
+    .error.warn {
+      border-color: rgba(251, 191, 36, .45);
+      background: rgba(251, 191, 36, .08)
+    }
+
+    .error .title {
+      font-weight: 700;
+      margin-bottom: 2px
+    }
+
+    .error details {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .error pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 6px 0 0
+    }
+
+    .error .btn {
+      margin-top: 10px
+    }
+
+    @media (max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .tiles {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      ul.stations {
+        max-height: 46vh
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header class="top">
+      <div class="brand">
+        <div class="eyebrow">Projet URBANWATT</div>
+        <h1>Portail du réseau de recharge</h1>
+      </div>
+      <div class="health" title="Etat de l'API (GET /health)">
+        <span class="dot" id="health-dot"></span><span id="health-text">API : vérification…</span>
+      </div>
+    </header>
+
+    <section class="tiles" aria-label="Statistiques du réseau">
+      <div class="tile">
+        <div class="label">Stations</div>
+        <div class="value" id="t-stations">–</div>
+      </div>
+      <div class="tile">
+        <div class="label">Villes</div>
+        <div class="value" id="t-villes">–</div>
+      </div>
+      <div class="tile">
+        <div class="label">1re ouverture</div>
+        <div class="value small" id="t-first">–</div>
+      </div>
+      <div class="tile">
+        <div class="label">Dernière ouverture</div>
+        <div class="value small" id="t-last">–</div>
+      </div>
+    </section>
+
+    <main class="grid">
+
+      <!-- Stations -->
+      <section class="panel" aria-labelledby="h-stations">
+        <h2 id="h-stations">Stations <span class="count" id="stations-count"></span></h2>
+        <div class="body">
+          <div class="filters">
+            <label class="sr-only" for="s-q">Rechercher une station</label>
+            <input type="search" id="s-q" placeholder="Rechercher (code, nom, adresse…)" autocomplete="off">
+            <label class="sr-only" for="s-ville">Filtrer par ville</label>
+            <select id="s-ville">
+              <option value="">Toutes les villes</option>
+            </select>
+          </div>
+          <div id="stations-box" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- Bornes -->
+      <section class="panel" aria-labelledby="h-bornes">
+        <h2 id="h-bornes">Bornes de la station
+          <form class="goto" id="goto-form" autocomplete="off">
+            <label for="goto-id">Ouvrir par ID</label>
+            <input type="number" id="goto-id" min="0" step="1" inputmode="numeric" placeholder="ex. 3">
+            <button class="btn" type="submit">OK</button>
+          </form>
+        </h2>
+        <div class="body" id="bornes-box" aria-live="polite">
+          <div class="state">Sélectionnez une station dans la liste pour afficher ses bornes.</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API = "http://127.0.0.1:8080/api";
+    const state = {
+      stations: [],
+      stationsLoaded: false,
+      selectedId: null,
+      bornes: [],
+      bornesStationId: null,
+      reqSeq: 0,           // ignore les réponses obsolètes si l'utilisateur clique vite
+    };
+
+    const $ = (sel) => document.querySelector(sel);
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const nf = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
+    const norm = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+    function fmtDate(v) {
+      if (!v) return "–";
+      const d = new Date(v);
+      return isNaN(d) ? String(v) : d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    /* ---------- Accès API + erreurs lisibles ---------- */
+
+    async function fetchJson(url) {
+      let res;
+      try {
+        res = await fetch(url, { headers: { Accept: "application/json" } });
+      } catch (e) {
+        throw {
+          kind: "network", title: "Serveur injoignable",
+          message: "Impossible de contacter l'API. Vérifiez que le serveur est démarré et que le réseau fonctionne."
+        };
+      }
+      if (!res.ok) {
+        let detail = "";
+        try { const j = await res.json(); detail = j && j.detail != null ? j.detail : ""; } catch (_) { }
+        if (typeof detail !== "string") detail = JSON.stringify(detail);
+        if (res.status === 404) throw { kind: "notfound", status: 404, title: "Station introuvable", message: detail || "Cette ressource n'existe pas.", detail };
+        if (res.status === 422) throw { kind: "client", status: 422, title: "Identifiant invalide", message: "L'identifiant de station demandé n'est pas valide.", detail };
+        if (res.status >= 500) throw {
+          kind: "server", status: res.status, title: "Erreur du serveur (" + res.status + ")",
+          message: "L'API a rencontré un problème, par exemple la base de données est peut-être indisponible. Réessayez dans un instant.", detail
+        };
+        throw { kind: "client", status: res.status, title: "Requête refusée (" + res.status + ")", message: detail || res.statusText, detail };
+      }
+      try { return await res.json(); }
+      catch (_) { throw { kind: "parse", title: "Réponse invalide", message: "L'API a renvoyé une réponse illisible." }; }
+    }
+
+    function errorHtml(err, retryAction) {
+      const warn = err.kind === "notfound" ? " warn" : "";
+      const details = err.detail ? `<details><summary>Détails techniques</summary><pre>${esc(err.detail)}</pre></details>` : "";
+      const retry = retryAction ? `<div><button class="btn primary" data-action="${esc(retryAction)}">Réessayer</button></div>` : "";
+      return `<div class="error${warn}" role="alert">
+    <div class="title">${esc(err.title || "Erreur")}</div>
+    <div>${esc(err.message || "")}</div>${details}${retry}</div>`;
+    }
+
+    const loadingHtml = (txt) => `<div class="state"><span class="spinner"></span>${esc(txt)}</div>`;
+
+    /* ---------- Santé de l'API ---------- */
+
+    async function checkHealth() {
+      const dot = $("#health-dot"), txt = $("#health-text");
+      try {
+        const r = await fetch("http://127.0.0.1:8080/health", { cache: "no-store" });
+        if (!r.ok) throw new Error();
+        dot.className = "dot up"; txt.textContent = "API en ligne";
+      } catch (_) {
+        dot.className = "dot down"; txt.textContent = "API hors ligne";
+      }
+    }
+
+    /* ---------- Stations ---------- */
+
+    async function loadStations() {
+      $("#stations-box").innerHTML = loadingHtml("Chargement des stations…");
+      $("#stations-count").textContent = "";
+      try {
+        const data = await fetchJson(API + "/stations");
+        if (!Array.isArray(data)) throw { kind: "parse", title: "Réponse invalide", message: "Format inattendu pour la liste des stations." };
+        state.stations = data;
+        state.stationsLoaded = true;
+        fillCityFilter();
+        renderStats();
+        renderStations();
+      } catch (err) {
+        state.stationsLoaded = false;
+        $("#stations-box").innerHTML = errorHtml(err, "retry-stations");
+      }
+    }
+
+    function fillCityFilter() {
+      const sel = $("#s-ville"), current = sel.value;
+      const villes = [...new Set(state.stations.map((s) => s.ville).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "fr"));
+      sel.innerHTML = '<option value="">Toutes les villes</option>' +
+        villes.map((v) => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
+      sel.value = villes.includes(current) ? current : "";
+    }
+
+    function filteredStations() {
+      const q = norm($("#s-q").value.trim());
+      const ville = $("#s-ville").value;
+      return state.stations
+        .filter((s) => (!ville || s.ville === ville) &&
+          (!q || norm([s.code, s["nom Station"], s.ville, s.adresse].join(" ")).includes(q)))
+        .sort((a, b) => String(a.code).localeCompare(String(b.code), "fr", { numeric: true }));
+    }
+
+    function renderStations() {
+      const list = filteredStations();
+      $("#stations-count").textContent = list.length + " / " + state.stations.length;
+      if (!state.stations.length) {
+        $("#stations-box").innerHTML = '<div class="state">Aucune station enregistrée.</div>';
+        return;
+      }
+      if (!list.length) {
+        $("#stations-box").innerHTML = '<div class="state">Aucune station ne correspond à votre recherche.</div>';
+        return;
+      }
+      $("#stations-box").innerHTML = '<ul class="stations">' + list.map((s) => `
+    <li><button class="station" data-id="${esc(s.id)}" aria-pressed="${s.id === state.selectedId}">
+      <span class="code">${esc(s.code)}</span>
+      <span class="name">${esc(s["nom Station"])}</span>
+      <span class="meta">${esc(s.ville)}${s.adresse ? " · " + esc(s.adresse) : ""}</span>
+    </button></li>`).join("") + "</ul>";
+    }
+
+    function renderStats() {
+      const s = state.stations;
+      $("#t-stations").textContent = s.length ? nf.format(s.length) : "–";
+      $("#t-villes").textContent = s.length ? nf.format(new Set(s.map((x) => x.ville).filter(Boolean)).size) : "–";
+      const dates = s.map((x) => new Date(x["date ouverture"])).filter((d) => !isNaN(d)).sort((a, b) => a - b);
+      $("#t-first").textContent = dates.length ? fmtDate(dates[0]) : "–";
+      $("#t-last").textContent = dates.length ? fmtDate(dates[dates.length - 1]) : "–";
+    }
+
+    /* ---------- Bornes ---------- */
+
+    function etatKind(e) {
+      const t = norm(e);
+      if (t.includes("hors")) return "bad";
+      if (t.includes("maint")) return "warn";
+      if (t.includes("occup")) return "info";
+      if (t.includes("dispo") || t.includes("libre") || t.includes("service") || t === "ok") return "ok";
+      return "neutral";
+    }
+
+    async function selectStation(id) {
+      id = Number(id);
+      if (!Number.isInteger(id)) return;
+      state.selectedId = id;
+      history.replaceState(null, "", "#station=" + id);
+      renderStations();               // met à jour la surbrillance
+      await loadBornes(id);
+    }
+
+    async function loadBornes(id) {
+      const seq = ++state.reqSeq;
+      $("#bornes-box").innerHTML = loadingHtml("Chargement des bornes…");
+      try {
+        const data = await fetchJson(API + "/stations/" + encodeURIComponent(id) + "/bornes");
+        if (seq !== state.reqSeq) return;                // une requête plus récente a pris le relais
+        if (!Array.isArray(data)) throw { kind: "parse", title: "Réponse invalide", message: "Format inattendu pour la liste des bornes." };
+        state.bornes = data;
+        state.bornesStationId = id;
+        renderBornesPanel();
+      } catch (err) {
+        if (seq !== state.reqSeq) return;
+        state.bornes = [];
+        $("#bornes-box").innerHTML = errorHtml(err, err.kind === "notfound" ? null : "retry-bornes");
+      }
+      if (window.matchMedia("(max-width:900px)").matches) {
+        $("#h-bornes").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderBornesPanel() {
+      const id = state.bornesStationId;
+      const st = state.stations.find((s) => s.id === id);
+      const first = state.bornes[0];
+      const code = st ? st.code : first ? first.code_station : "Station #" + id;
+      const title = st ? st["nom Station"] : "";
+      const sub = st ? [st.ville, st.adresse].filter(Boolean).join(" · ") : "";
+
+      const etats = [...new Set(state.bornes.map((b) => b.etat_borne).filter((x) => x != null))].sort();
+      const conns = [...new Set(state.bornes.map((b) => b.connecteur).filter((x) => x != null))].sort();
+
+      $("#bornes-box").innerHTML = `
+    <div class="station-head">
+      <div class="t">${esc(code)}${title ? " — " + esc(title) : ""}</div>
+      ${sub ? `<div class="s">${esc(sub)}</div>` : ""}
+    </div>
+    <div class="chips" id="b-chips"></div>
+    <div class="filters">
+      <label class="sr-only" for="b-q">Rechercher une borne</label>
+      <input type="search" id="b-q" placeholder="Code de borne…" autocomplete="off">
+      <label class="sr-only" for="b-etat">Filtrer par état</label>
+      <select id="b-etat"><option value="">Tous les états</option>${etats.map((e) => `<option value="${esc(e)}">${esc(e)}</option>`).join("")}</select>
+      <label class="sr-only" for="b-conn">Filtrer par connecteur</label>
+      <select id="b-conn"><option value="">Tous les connecteurs</option>${conns.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}</select>
+      <label class="sr-only" for="b-sort">Trier</label>
+      <select id="b-sort">
+        <option value="code">Tri : code</option>
+        <option value="pdesc">Tri : puissance ↓</option>
+        <option value="pasc">Tri : puissance ↑</option>
+      </select>
+    </div>
+    <div id="b-table"></div>`;
+      renderBornesTable();
+    }
+
+    function renderBornesTable() {
+      const all = state.bornes;
+      // Chips de synthèse (sur toutes les bornes de la station, indépendamment des filtres)
+      const count = (k) => all.filter((b) => etatKind(b.etat_borne) === k).length;
+      const totalKw = all.reduce((sum, b) => sum + (Number(b.puissance_borne) || 0), 0);
+      $("#b-chips").innerHTML = `
+    <span class="chip"><b>${all.length}</b> borne${all.length > 1 ? "s" : ""}</span>
+    <span class="chip"><b>${count("ok")}</b> disponible${count("ok") > 1 ? "s" : ""}</span>
+    <span class="chip"><b>${count("warn")}</b> en maintenance</span>
+    <span class="chip"><b>${count("bad")}</b> hors service</span>
+    <span class="chip"><b>${nf.format(totalKw)}</b> kW installés</span>`;
+
+      if (!all.length) {
+        $("#b-table").innerHTML = '<div class="state">Cette station ne possède aucune borne.</div>';
+        return;
+      }
+
+      const q = norm($("#b-q").value.trim()), fe = $("#b-etat").value, fc = $("#b-conn").value, sort = $("#b-sort").value;
+      const list = all
+        .filter((b) => (!q || norm(b.code_borne).includes(q)) && (!fe || b.etat_borne === fe) && (!fc || b.connecteur === fc))
+        .sort((a, b) => {
+          if (sort === "pdesc") return (Number(b.puissance_borne) || 0) - (Number(a.puissance_borne) || 0);
+          if (sort === "pasc") return (Number(a.puissance_borne) || 0) - (Number(b.puissance_borne) || 0);
+          return String(a.code_borne).localeCompare(String(b.code_borne), "fr", { numeric: true });
+        });
+
+      if (!list.length) {
+        $("#b-table").innerHTML = '<div class="state">Aucune borne ne correspond aux filtres.</div>';
+        return;
+      }
+      $("#b-table").innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Borne</th><th>Connecteur</th><th class="num">Puissance</th><th>État</th></tr></thead>
+    <tbody>${list.map((b) => `<tr>
+      <td class="code">${esc(b.code_borne)}</td>
+      <td>${esc(b.connecteur ?? "–")}</td>
+      <td class="num">${b.puissance_borne == null ? "–" : nf.format(Number(b.puissance_borne)) + " kW"}</td>
+      <td><span class="badge ${etatKind(b.etat_borne)}">${esc(b.etat_borne ?? "inconnu")}</span></td>
+    </tr>`).join("")}</tbody></table></div>`;
+    }
+
+    /* ---------- Événements ---------- */
+
+    $("#stations-box").addEventListener("click", (e) => {
+      const retry = e.target.closest("[data-action=retry-stations]");
+      if (retry) return loadStations();
+      const btn = e.target.closest("button.station");
+      if (btn) selectStation(btn.dataset.id);
+    });
+
+    $("#bornes-box").addEventListener("click", (e) => {
+      if (e.target.closest("[data-action=retry-bornes]") && state.selectedId != null) loadBornes(state.selectedId);
+    });
+    $("#bornes-box").addEventListener("input", (e) => {
+      if (e.target.matches("#b-q,#b-etat,#b-conn,#b-sort")) renderBornesTable();
+    });
+
+    $("#s-q").addEventListener("input", renderStations);
+    $("#s-ville").addEventListener("change", renderStations);
+
+    $("#goto-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = $("#goto-id").value.trim();
+      if (v !== "") selectStation(v);
+    });
+
+    /* ---------- Démarrage ---------- */
+
+    (async function init() {
+      checkHealth();
+      setInterval(checkHealth, 30000);
+      const m = location.hash.match(/station=(\d+)/);
+      const wanted = m ? Number(m[1]) : null;
+      const stationsP = loadStations();
+      if (wanted !== null) {
+        state.selectedId = wanted;
+        await Promise.all([stationsP, loadBornes(wanted)]);
+        renderStations();
+        // l'en-tête de la station a pu être rendu avant l'arrivée de la liste des stations
+        if (state.bornesStationId === wanted) renderBornesPanel();
+      }
+    })();
+  </script>
+</body>
+
+</html>
