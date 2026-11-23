@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 from app.database import get_connection
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 app = FastAPI(
@@ -8,7 +11,12 @@ app = FastAPI(
     description="API de gestion des stations et des bornes",
     version="1.0.0"
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 @app.get("/health")
 def health_check():
     return{"Health":"OK"}
@@ -101,3 +109,8 @@ def get_bornes(id: int):
             status_code=500,
             detail=str(e)
         )
+    app.mount(
+    "/",
+    StaticFiles(directory=Path(__file__).with_name("static"), html=True),
+    name="frontend",
+)
