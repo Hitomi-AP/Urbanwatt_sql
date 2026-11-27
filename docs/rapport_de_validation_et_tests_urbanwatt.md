@@ -19,14 +19,15 @@ Ce document présente la stratégie de validation mise en œuvre pour vérifier 
 
 ## 2. Analyse des Risques Techniques
 
-* **Risque identifié :** Saturation ou lenteur des requêtes de l'API lors de l'affichage de l'historique sur la table `sessions_recharge` (250 000 lignes) ou perte de données suite à une panne brutale du serveur hébergeant PostgreSQL.
-* **Mesures de limitation appliquées :**
-  * **Optimisation des performances :** Création d'index métiers ciblés (`idx_sessions_vehicule` et `idx_incidents_borne`) pour éviter le balayage séquentiel complet des tables volumineuses.
-  * **Sécurité et résilience :** Mise en place de sauvegardes régulières via `pg_dump` et vérification systématique de la persistance des volumes de données au redémarrage des services.
+- **Risque identifié :** Lenteur des requêtes sur les tables volumineuses (notamment `sessions_recharge` avec 250 000 lignes), perte de données en cas d'incident sur PostgreSQL, ou exposition de secrets / accès non autorisés.
+- **Mesures de limitation appliquées :**
+  - **Performance :** Création d'index métiers ciblés (`idx_sessions_vehicule` et `idx_incidents_borne`) pour limiter le balayage séquentiel.
+  - **Sauvegarde et persistance :** Sauvegardes `pg_dump` validées par restauration sur `db_backup` et vérification de la persistance au redémarrage.
+  - **Sécurité :** Rôle `api_reader` limité à la lecture (`SELECT`), exclusion de `infra/.env` via `.gitignore` (avec `infra/.env.example`), et validation stricte des paramètres d'entrée sur l'API.
 
 ---
 
 ## 3. Bilan de Validation
 
-* **Statut global :** **RÉUSSITE** (6/6 scénarios validés).
-* **Détail des corrections appliquées :** Ajout d'une gestion d'erreur explicite (`try/except` et vérification d'existence) sur la route `GET /api/stations/{id}/bornes` afin de retourner proprement un code HTTP `404` (au lieu d'une erreur serveur `500`) lorsqu'un identifiant de station inexistant est sollicité.
+- **Statut global :** **RÉUSSITE** (6/6 scénarios validés : T1 à T6).
+- **Détail des corrections appliquées :** Ajout de la vérification d'existence de la station et de la gestion d'erreur (`404` au lieu de `500`) sur `GET /api/stations/{id}/bornes`, ainsi que la mise à jour de `.gitignore` pour couvrir `infra/.env` tout en conservant `infra/.env.example`.
