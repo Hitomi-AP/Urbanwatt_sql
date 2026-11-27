@@ -4,13 +4,13 @@
 
 Dans le fichier compose.yaml pour mettre docker,on permet de mettre des volumes pour le serveur de base de données et pgadmin qui seront gérer par docker.
 
-![1795445773303](Sauvegardes/1795445773303.png)
+![1795445773303](/Sauvegardes/1795445773303.png)
 
 ## Sauvergardes et restauration
 
 Pour vérifier si les sauvegardes marchent, on créé une sauvegarde de la base de donnée *db* puis on fait une base de données de test pour vérifier que les données sont bien implémenter dans la base de secours *db_backup*. Les tests sont un succès.
 
-![1795445538027](Sauvegardes/1795445538027.png)
+![1795445538027](/Sauvegardes/1795445538027.png)
 
 ## Vérifications des données
 
