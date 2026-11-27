@@ -13,7 +13,7 @@ Ce document présente la stratégie de validation mise en œuvre pour vérifier 
 | **T3** | **Gestion réponse API inconnue :** Appel de `GET /api/stations/99999/bornes` (ou station inexistante). | L'API renvoie un code HTTP `404` et l'interface web affiche un message d'erreur clair sans planter. | Code `404` retourné, message « Station introuvable » affiché à l'écran. | **Succès** |
 | **T4** | **Restauration des données :** Sauvegarde avec `pg_dump` et restauration dans une base de test distincte. | Nombre de lignes strictement identique entre la base principale et la base de test. | intégralité des tables confirmées  | **Succès** |
 | T5 | Contrôle sécurité 1 (Accès DB) : Vérification des privilèges du rôle applicatif api_reader sur public.vehicules via has_table_privilege. | Le rôle dispose uniquement du droit SELECT (true) et n'a aucun droit d'écriture ou suppression (insert, update, delete à false). | Résultat obtenu : select = true, insert = false, update = false, delete = false sur public.vehicules. | Succès |
-| **T6** | **Contrôle sécurité 2 (Secrets & SQLi) :** Vérification du `.gitignore` et test d'injection SQL dans l'URL de l'API. | Le fichier `.env` est absent du dépôt Git et les requêtes paramétrées bloquent l'injection. | Fichier `.env` ignoré par Git ; paramètre malveillant traité comme simple chaîne. | **Succès** |
+| T6 | Contrôle sécurité 2 (Secrets & SQLi) : Vérification de l'exclusion de infra/.env via .gitignore et test d'injection SQL (1 OR 1=1) sur GET /api/stations/{id}/bornes. | infra/.env ignoré hors dépôt Git et charge d'injection bloquée sans exécution SQL. | infra/.env ignoré par Git (infra/.env.example conservé) ; saisie 1 OR 1=1 rejetée (Value must be an integer.). | Succès |
 
 ---
 
