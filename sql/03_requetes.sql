@@ -202,17 +202,3 @@ WHERE p.statut = 'accepte'
 ORDER BY p.montant_eur DESC
 LIMIT 10;
 
-
--- Question d'approfondissement
-
-
--- Question 25 : Bornes sans incident signalé.
-SELECT b.id_borne, b.code_borne, st.code_station, st.nom_station, b.puissance_kw, b.etat
-FROM bornes b
-JOIN stations st ON b.id_station = st.id_station
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM incidents i
-    WHERE i.id_borne = b.id_borne
-)
-ORDER BY st.code_station, b.code_borne;
